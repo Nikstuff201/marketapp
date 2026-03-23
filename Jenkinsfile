@@ -31,7 +31,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn clean test'
+                sh 'mvn clean verify'
             }
         }
 
@@ -43,11 +43,10 @@ pipeline {
 
         stage('Publish Coverage Report') {
             steps {
-                jacoco execPattern: 'target/jacoco.exec',
-                        classPattern: 'target/classes',
-                        sourcePattern: 'src/main/java'
+                jacoco execPattern: '**/jacoco.exec',
+                        classPattern: '**/classes',
+                        sourcePattern: '**/src/main/java'
             }
-        }
 
         stage('Build Docker Image') {
             steps {
