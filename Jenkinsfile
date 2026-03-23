@@ -48,28 +48,29 @@ pipeline {
                         sourcePattern: '**/src/main/java'
             }
 
-        stage('Build Docker Image') {
-            steps {
-                sh '''
+            stage('Build Docker Image') {
+                steps {
+                    sh '''
                     export PATH=/usr/local/bin:/usr/bin:/bin
                     docker build -t $IMAGE_NAME:latest .
                 '''
+                }
             }
-        }
 
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                        credentialsId: 'dockerId',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                )]) {
+            stage('Push Docker Image to Docker Hub') {
+                steps {
+                    withCredentials([usernamePassword(
+                            credentialsId: 'dockerId',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                    )]) {
 
-                    sh '''
+                        sh '''
                         export PATH=/usr/local/bin:/usr/bin:/bin
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                         docker push $IMAGE_NAME:latest
                     '''
+                    }
                 }
             }
         }
