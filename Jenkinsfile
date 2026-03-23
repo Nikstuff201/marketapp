@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "nikstuff201/marketapp"
+        PATH = "/usr/local/bin:/usr/bin:/bin"
     }
 
     stages {
@@ -52,7 +53,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '/usr/local/bin/docker build -t $IMAGE_NAME:latest .'
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
