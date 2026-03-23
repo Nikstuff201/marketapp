@@ -47,6 +47,7 @@ pipeline {
                         classPattern: '**/classes',
                         sourcePattern: '**/src/main/java'
             }
+        }
 
             stage('Build Docker Image') {
                 steps {
@@ -74,5 +75,4 @@ pipeline {
                 }
             }
         }
-    }
 }
