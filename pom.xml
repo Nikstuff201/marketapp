@@ -32,7 +32,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ТВОЙ.ПАКЕТ.Main</mainClass>
+                            <mainClass>org.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

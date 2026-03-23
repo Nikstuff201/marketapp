@@ -17,9 +17,39 @@ pipeline {
             }
         }
 
+        stage('Check') {
+            steps {
+                sh 'mvn validate'
+            }
+        }
+
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Report') {
+            steps {
+                sh 'mvn surefire-report:report || true'
+            }
+        }
+
+        stage('Publish Test Results') {
+            steps {
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+
+        stage('Publish Coverage Report') {
+            steps {
+                sh 'mvn jacoco:report || true'
             }
         }
 
