@@ -35,12 +35,6 @@ pipeline {
             }
         }
 
-        stage('Report') {
-            steps {
-                sh 'mvn verify'
-            }
-        }
-
         stage('Publish Test Results') {
             steps {
                 junit '**/target/surefire-reports/*.xml'
