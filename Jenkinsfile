@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "nikstuff201/marketapp"
+        IMAGE_NAME = "nikstuff201/my-java-app"
     }
 
     stages {
@@ -31,7 +31,13 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn clean verify'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Report') {
+            steps {
+                sh 'mvn verify'
             }
         }
 
@@ -43,38 +49,33 @@ pipeline {
 
         stage('Publish Coverage Report') {
             steps {
-                recordCoverage(
-                        tools: [
-                                jacoco(pattern: '**/jacoco.xml')
-                        ]
-                )
+                jacoco execPattern: 'target/jacoco.exec',
+                        classPattern: 'target/classes',
+                        sourcePattern: 'src/main/java',
+                        exclusionPattern: ''
             }
         }
 
-            stage('Build Docker Image') {
-                steps {
-                    sh '''
-                    export PATH=/usr/local/bin:/usr/bin:/bin
-                    docker build -t $IMAGE_NAME:latest .
-                '''
-                }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
+        }
 
-            stage('Push Docker Image to Docker Hub') {
-                steps {
-                    withCredentials([usernamePassword(
-                            credentialsId: 'dockerId',
-                            usernameVariable: 'DOCKER_USER',
-                            passwordVariable: 'DOCKER_PASS'
-                    )]) {
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                        credentialsId: 'dockerId',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                )]) {
 
-                        sh '''
-                        export PATH=/usr/local/bin:/usr/bin:/bin
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    sh """
+                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
                         docker push $IMAGE_NAME:latest
-                    '''
-                    }
+                    """
                 }
             }
         }
+    }
 }
