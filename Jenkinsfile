@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = "nikstuff201/marketapp"
-        PATH = "/usr/local/bin:/usr/bin:/bin"
     }
 
     stages {
@@ -32,7 +31,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn clean test'
+                sh 'mvn test'
             }
         }
 
@@ -46,14 +45,16 @@ pipeline {
             steps {
                 jacoco execPattern: 'target/jacoco.exec',
                         classPattern: 'target/classes',
-                        sourcePattern: 'src/main/java',
-                        exclusionPattern: ''
+                        sourcePattern: 'src/main/java'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                sh '''
+                    export PATH=/usr/local/bin:/usr/bin:/bin
+                    docker build -t $IMAGE_NAME:latest .
+                '''
             }
         }
 
@@ -65,10 +66,11 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS'
                 )]) {
 
-                    sh """
-                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                    sh '''
+                        export PATH=/usr/local/bin:/usr/bin:/bin
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                         docker push $IMAGE_NAME:latest
-                    """
+                    '''
                 }
             }
         }
