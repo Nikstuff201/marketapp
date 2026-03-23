@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "nikstuff201/my-java-app"
+        IMAGE_NAME = "nikstuff201/market-app"
     }
 
     stages {
