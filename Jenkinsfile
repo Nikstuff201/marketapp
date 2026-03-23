@@ -43,11 +43,12 @@ pipeline {
 
         stage('Publish Coverage Report') {
             steps {
-                jacoco execPattern: '**/jacoco.exec',
-                        classPattern: '**/classes',
-                        sourcePattern: '**/src/main/java'
+                recordCoverage(
+                        tools: [
+                                jacoco(pattern: '**/jacoco.xml')
+                        ]
+                )
             }
-        }
 
             stage('Build Docker Image') {
                 steps {
