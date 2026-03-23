@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "nikstuff201/market-app"
+        IMAGE_NAME = "nikstuff201/marketapp"
     }
 
     stages {
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn compile'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
 
         stage('Report') {
             steps {
-                sh 'mvn surefire-report:report || true'
+                sh 'mvn verify'
             }
         }
 
@@ -49,7 +49,10 @@ pipeline {
 
         stage('Publish Coverage Report') {
             steps {
-                sh 'mvn jacoco:report || true'
+                jacoco execPattern: 'target/jacoco.exec',
+                        classPattern: 'target/classes',
+                        sourcePattern: 'src/main/java',
+                        exclusionPattern: ''
             }
         }
 
@@ -59,7 +62,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Image to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'dockerId',
